@@ -1,0 +1,289 @@
+<html lang="ko" class="js logged-in client-root"><head><meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+        <title>Instagram</title>
+
+        
+        <meta name="robots" content="noimageindex, noarchive">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="theme-color" content="#000000">
+        <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=5, viewport-fit=cover">
+        <link rel="stylesheet" type="text/css" href="./index.css">
+        <link rel="manifest" href="/data/manifest.json">
+          <link href="https://graph.instagram.com" rel="preconnect" crossorigin="">
+          <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+        <script type="text/javascript">
+        (function() {
+  var docElement = document.documentElement;
+  var classRE = new RegExp('(^|\\s)no-js(\\s|$)');
+  var className = docElement.className;
+  docElement.className = className.replace(classRE, '$1js$2');
+})();
+</script>
+        <!-- first_input_delay is a js file copied from https://fburl.com/rc21x6p3
+in order to use it statically for server side rendering.
+We should aim to keep it consistent with their updates -->
+<!-- This is a js file copied from https://fburl.com/rc21x6p3
+in order to use it statically for server side rendering.
+We should aim to keep it consistent with their updates -->
+
+<script type="text/javascript">
+
+/*
+ Copyright 2018 Google Inc. All Rights Reserved.
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+*/
+
+(function(){function g(a,c){b||(b=a,f=c,h.forEach(function(a){removeEventListener(a,l,e)}),m())}function m(){b&&f&&0<d.length&&(d.forEach(function(a){a(b,f)}),d=[])}function n(a,c){function k(){g(a,c);d()}function b(){d()}function d(){removeEventListener("pointerup",k,e);removeEventListener("pointercancel",b,e)}addEventListener("pointerup",k,e);addEventListener("pointercancel",b,e)}function l(a){if(a.cancelable){var c=performance.now(),b=a.timeStamp;b>c&&(c=+new Date);c-=b;"pointerdown"==a.type?n(c,
+a):g(c,a)}}var e={passive:!0,capture:!0},h=["click","mousedown","keydown","touchstart","pointerdown"],b,f,d=[];h.forEach(function(a){addEventListener(a,l,e)});window.perfMetrics=window.perfMetrics||{};window.perfMetrics.onFirstInputDelay=function(a){d.push(a);m()}})();
+</script>
+
+<script type="text/javascript">
+(function() {
+  if ('PerformanceObserver' in window && 'PerformancePaintTiming' in window) {
+    window.__bufferedPerformance = [];
+    var ob = new PerformanceObserver(function(e) {
+      window.__bufferedPerformance.push.apply(window.__bufferedPerformance,e.getEntries());
+    });
+    ob.observe({entryTypes:['paint']});
+  }
+  window.__bufferedErrors = [];
+  window.onerror = function(message, url, line, column, error) {
+    window.__bufferedErrors.push({
+      message: message,
+      url: url,
+      line: line,
+      column: column,
+      error: error
+    });
+    return false;
+  };
+  window.__initialData = {
+    pending: true,
+    waiting: []
+  };
+  function notifyLoaded(item, data) {
+    item.pending = false;
+    item.data = data;
+    for (var i = 0;i < item.waiting.length; ++i) {
+      item.waiting[i].resolve(item.data);
+    }
+    item.waiting = [];
+  }
+  function notifyError(item, msg) {
+    item.pending = false;
+    item.error = new Error(msg);
+    for (var i = 0;i < item.waiting.length; ++i) {
+      item.waiting[i].reject(item.error);
+    }
+    item.waiting = [];
+  }
+  window.__initialDataLoaded = function(initialData) {
+    notifyLoaded(window.__initialData, initialData);
+  };
+  window.__initialDataError = function(msg) {
+    notifyError(window.__initialData, msg);
+  };
+  window.__additionalData = {};
+  window.__pendingAdditionalData = function(paths) {
+    for (var i = 0;i < paths.length; ++i) {
+      window.__additionalData[paths[i]] = {
+        pending: true,
+        waiting: []
+      };
+    }
+  };
+  window.__additionalDataLoaded = function(path, data) {
+    notifyLoaded(window.__additionalData[path], data);
+  };
+  window.__additionalDataError = function(path, msg) {
+    notifyError(window.__additionalData[path], msg);
+  };
+})();
+</script>
+    
+                <link rel="apple-touch-icon-precomposed" sizes="76x76" href="/static/images/ico/apple-touch-icon-76x76-precomposed.png/4272e394f5ad.png">
+                <link rel="apple-touch-icon-precomposed" sizes="120x120" href="/static/images/ico/apple-touch-icon-120x120-precomposed.png/02ba5abf9861.png">
+                <link rel="apple-touch-icon-precomposed" sizes="152x152" href="/static/images/ico/apple-touch-icon-152x152-precomposed.png/419a6f9c7454.png">
+                <link rel="apple-touch-icon-precomposed" sizes="167x167" href="/static/images/ico/apple-touch-icon-167x167-precomposed.png/a24e58112f06.png">
+                <link rel="apple-touch-icon-precomposed" sizes="180x180" href="/static/images/ico/apple-touch-icon-180x180-precomposed.png/85a358fb3b7d.png">
+                
+                    <link rel="icon" sizes="192x192" href="./68d99ba29cc8.png">
+                
+            
+            
+                    <link rel="mask-icon" href="/static/images/ico/favicon.svg/fc72dd4bfde8.svg" color="#262626">
+                  
+                  <link rel="shortcut icon" type="image/x-icon" href="./36b3ee2d91ed.ico">
+</head>    
+    <body class="">
+        
+    <span id="react-root"><section class="_9eogI E3X2T"><main class="SCxLW  o64aR" role="main"><div class="BSqtQ X6NdS"><div class="Xt-CQ"><h2 class="yQ0j1">사람 찾기</h2><div class="Lkcbb"><div class="t0fbY"><a class="pUHJ0 _2dbep qNELH kIKUG" href="/seren/" style="width: 78px; height: 78px;"><img class="_6q-tv" src="https://firebasestorage.googleapis.com/v0/b/seren-ann.appspot.com/o/serendip.png?alt=media&amp;token=de7d35ce-6d33-401f-8465-9af82bba6b6e" alt="seren님의 프로필 사진"></a><div class="_2vJ74"><div class="s5bRp"><a class="FPmhX notranslate DXv8P" title="seren" href="/seren/">seren</a></div><div class="TZmjM">김예준</div></div><div class="ykFma"><span class="_1OSdk"><button class="_5f5mN       jIbKX  _6VtSN     yZn4P   ">연락하기</button></span></div></div><div class="t0fbY"><a class="pUHJ0 _2dbep qNELH kIKUG" href="/Ann/" style="width: 78px; height: 78px;"><img class="_6q-tv" src="https://firebasestorage.googleapis.com/v0/b/seren-ann.appspot.com/o/serendip.png?alt=media&amp;token=de7d35ce-6d33-401f-8465-9af82bba6b6e" alt="Ann님의 프로필 사진"></a><div class="_2vJ74"><div class="s5bRp"><a class="FPmhX notranslate DXv8P" title="Ann" href="/Ann/">Ann</a></div><div class="TZmjM">박은주</div></div><div class="ykFma"><span class="_1OSdk"><button class="_5f5mN       jIbKX  _6VtSN     yZn4P   ">연락하기</button></span></div></div></div></div><h2 class="yQ0j1">둘러보기</h2>
+    <article class="v1pSD">
+      <div>
+        <div style="flex-direction: column; padding-bottom: 0px; padding-top: 0px;">
+          <div class="Nnq7C weEfm">
+            <div class="v1Nh3 kIKUG  _bz0w">
+              <a href="#" onclick="show(this)">
+                <div class="eLAPa" role="button"><div class="KL4Bh"><img alt="테스트" class="FFVAD" decoding="auto" sizes="293px" src="https://firebasestorage.googleapis.com/v0/b/seren-ann.appspot.com/o/202.jpeg?alt=media&token=be1f2d94-be22-44e7-87f8-798cc011fc47" style=""></div><div class="_9AhH0"></div></div>
+              </a>
+            </div>
+            <div class="v1Nh3 kIKUG  _bz0w">
+              <a href="#" onclick="show(this)"><div class="eLAPa" role="button"><div class="KL4Bh"><img alt="" class="FFVAD" decoding="auto" sizes="293px" src="https://firebasestorage.googleapis.com/v0/b/seren-ann.appspot.com/o/203.jpeg?alt=media&token=65fa72ad-3540-49c4-91ca-acb8f8b8061b" style=""></div><div class="_9AhH0"></div></div><div class="u7YqG"></div></a>
+            </div>
+          </div>
+          <div class="Nnq7C weEfm">
+            <div class="v1Nh3 kIKUG  _bz0w">
+              <a href="#" onclick="show(this)">
+                <div class="eLAPa" role="button">
+                  <div class="KL4Bh">
+                    <img alt="" class="FFVAD" decoding="auto" sizes="293px" src="https://firebasestorage.googleapis.com/v0/b/seren-ann.appspot.com/o/201.jpeg?alt=media&token=21a8f32b-1102-42c5-82d1-aa232eee6289" style="">
+                  </div>
+                  <div class="_9AhH0"></div>
+                </div>
+              </a>
+            </div>
+            <div class="v1Nh3 kIKUG  _bz0w">
+              <a href="#" onclick="show(this)">
+                <div class="eLAPa" role="button">
+                  <div class="KL4Bh">
+                    <img alt="" class="FFVAD" decoding="auto" sizes="293px" src="https://firebasestorage.googleapis.com/v0/b/seren-ann.appspot.com/o/204.jpeg?alt=media&token=d53f8bb9-952b-41a7-8ac3-a616e3f5713e" style="">
+                  </div>
+                  <div class="_9AhH0"></div>
+                </div>
+              </a>
+            </div>
+            <div class="v1Nh3 kIKUG  _bz0w">
+              <a href="#" onclick="show(this)">
+                <div class="eLAPa" role="button"><div class="KL4Bh"><img alt="테스트" class="FFVAD" decoding="auto" sizes="293px" src="https://firebasestorage.googleapis.com/v0/b/seren-ann.appspot.com/o/205.jpeg?alt=media&token=bf917ddf-9d44-4ace-a254-c028ceefee25" style=""></div><div class="_9AhH0"></div></div>
+              </a>
+            </div>
+          </div>
+          <div class="Nnq7C weEfm">
+            <div class="v1Nh3 kIKUG  _bz0w">
+              <a href="#" onclick="show(this)"><div class="eLAPa" role="button"><div class="KL4Bh"><img alt="" class="FFVAD" decoding="auto" sizes="293px" src="https://firebasestorage.googleapis.com/v0/b/seren-ann.appspot.com/o/101.jpeg?alt=media&token=810dc293-28d9-4ac5-b9f2-14e92c150639" style=""></div><div class="_9AhH0"></div></div><div class="u7YqG"></div></a>
+            </div>
+            <div class="v1Nh3 kIKUG  _bz0w">
+              <a href="#" onclick="show(this)"><div class="eLAPa" role="button"><div class="KL4Bh"><img alt="" class="FFVAD" decoding="auto" sizes="293px" src="https://firebasestorage.googleapis.com/v0/b/seren-ann.appspot.com/o/104.jpeg?alt=media&token=16f19a99-2140-4ab8-9926-f5154e772c9c" style=""></div><div class="_9AhH0"></div></div><div class="u7YqG"></div></a>
+            </div>
+          </div>
+          <div class="Nnq7C weEfm">
+            <div class="v1Nh3 kIKUG  _bz0w"><a href="#" onclick="show(this)"><div class="eLAPa" role="button"><div class="KL4Bh"><img alt="" class="FFVAD" decoding="auto" sizes="293px" src="https://firebasestorage.googleapis.com/v0/b/seren-ann.appspot.com/o/103.jpeg?alt=media&token=aebe06b4-bc05-40ef-a8e9-91b8a1e52fba" style=""></div><div class="_9AhH0"></div></div></a></div>
+            <div class="v1Nh3 kIKUG  _bz0w"><a href="#" onclick="show(this)"><div class="eLAPa" role="button"><div class="KL4Bh"><img alt="" class="FFVAD" decoding="auto" sizes="293px" src="https://firebasestorage.googleapis.com/v0/b/seren-ann.appspot.com/o/102.jpeg?alt=media&token=63a6355b-4f75-43ce-90a8-d3796938cee0" style=""></div><div class="_9AhH0"></div></div></a></div>
+            <div class="v1Nh3 kIKUG  _bz0w"><a href="#" onclick="show(this)"><div class="eLAPa" role="button"><div class="KL4Bh"><img alt="" class="FFVAD" decoding="auto" sizes="293px" src="https://firebasestorage.googleapis.com/v0/b/seren-ann.appspot.com/o/105.jpeg?alt=media&token=8484ecd9-4677-459d-bc29-63507b35faec" style=""></div><div class="_9AhH0"></div></div></a></div>
+          </div>
+        </div>
+      </div>
+    </article>
+  </div>
+</main>
+
+            <nav class="NXc7H jLuN9  ">
+                <div class="XajnB"></div>
+                    <div class="_8MQSO  Cx7Bp">
+                        <div class="_lz6s ">
+                            <div class="MWDvN ">
+                                <div class="oJZym">
+                                    <div class="aU2HW"><a class="jWQqO Szr5J TAvXg _7mese" href="/">Instagram</a><a class="jWQqO Szr5J efNlB _72hVR" href="/">Instagram</a></div>
+                                </div>
+                                <div class="LWmhU _0aCwM search_btn toggle_on">
+                                    <form action="https://www.google.co.kr/search" target="_blank">
+                                        <input class="XTCLo zyHYP" placeholder="검색" type="text" value="" name="q">
+                                    </form>
+                                    <div class="pbgfb Di7vw " role="button">
+                                        <div class="eyXLr wUAXj ">
+                                            <span class="_6RZXI HQqj1"></span>
+                                            <span class="TqC_a">검색</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="LWmhU _0aCwM toggle_off">
+                                    <form action="https://www.google.co.kr/search" target="_blank">
+                                        <input class="XTCLo zyHYP" placeholder="검색" type="text" value="" name="q">
+                                    </form>
+                                    <span class="mlrQa HQqj1"></span>
+                                    <div class="jLwSh" role="dialog"></div>
+                                    <div class="aIYm8 sUzlC" role="button"></div>
+                                </div>
+                                <div class="ctQZg">
+                                    <div class="_47KiJ">
+                                        <div class="XrOey"><a class="Szr5J kIKUG cwB7a" href="./explore.html">사람 찾기</a></div>
+                                        <div class="XrOey"><a href="/" class="_0ZPOP kIKUG dFPOx  "><span class="Szr5J">활동 피드</span></a></div>
+                                        <div class="XrOey"><a class="Szr5J kIKUG kQqyt" href="/">프로필</a></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+
+            <footer class="_8Rna9 _3Laht" role="contentinfo">
+                <div class="iseBh  VWk7Y " style="max-width: 570px;">
+                    <nav class="uxKLF"></nav>
+                    <span class="DINPA">© 2018 Serendip</span>
+                </div>
+            </footer>
+
+    <div class="overlay" style="display: none;"></div>
+    <div class="overlay-message" style="position: fixed;top:10%; display: none;">
+        <div id="image_holder" style="position: relative; left:5%; overflow-y:scroll; max-height:500px;" >
+            <img width="90%" src="https://firebasestorage.googleapis.com/v0/b/seren-ann.appspot.com/o/main.jpg?alt=media&token=6ca19282-71cf-4f14-9aa6-8d83c212ff28">
+        </div>
+    </div>
+
+</section>
+
+
+</span>
+
+
+    <script type="text/javascript">
+        var show = function(that){
+          var src = $(that).find("img").first().attr("src");
+          $("#image_holder").find("img").attr("src", src);
+          $(".overlay,.overlay-message").show();
+        };
+        $(".overlay,.overlay-message").click(function(){
+          $(".overlay,.overlay-message").hide();
+        });
+        var toggle_event = function() {
+            let toggle_on = $(".toggle_on");
+            let toggle_off = $(".toggle_off");
+            toggle_on.removeClass("toggle_on")
+                .addClass("toggle_off");
+            toggle_off.removeClass("toggle_off")
+                .addClass("toggle_on");
+        };
+        $(".LWmhU.search_btn").click(function() {
+            toggle_event();
+            $(".XTCLo").focus();
+        });
+        $(".XTCLo").focusout(function() {
+            toggle_event();
+        });
+        var is_play = false;
+        var video_toggle = function(){
+            if(is_play) {
+                var video = document.getElementById("video").pause();
+                $(".videoSpritePlayButton").show(this);
+                is_play = false;
+            } else {
+                var video = document.getElementById("video").play();
+                $(".videoSpritePlayButton").hide();
+                is_play = true;
+            }
+        }
+    </script>        
+</body>
+</html>

@@ -1,0 +1,628 @@
+<html lang="ko" class="js logged-in client-root">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>김예준&박은주</title>
+    <meta name="robots" content="noimageindex, noarchive">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#000000">
+    <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=5, viewport-fit=cover">
+    <meta property="og:url"                content="https://seren.app" />
+    <meta property="og:type"               content="article" />
+    <meta property="og:title"              content="김예준&박은주" />
+    <meta property="og:description"        content="2018-08-25 양재 온누리교회 결혼예배" />
+    <meta property="og:image"              content="https://firebasestorage.googleapis.com/v0/b/seren-ann.appspot.com/o/main.jpg?alt=media&amp;token=6ca19282-71cf-4f14-9aa6-8d83c212ff28" />
+
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/4.12.1/firebase.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/4.12.1/firebase-firestore.js"></script>
+    <script src="https://smartlock.google.com/client"></script>
+    <script src="https://cdn.firebase.com/libs/firebaseui/3.0.0/firebaseui.js"></script>
+    <link type="text/css" rel="stylesheet" href="https://cdn.firebase.com/libs/firebaseui/3.0.0/firebaseui.css" />
+    
+    <script type="text/javascript">
+        var setCookie = function(name, value) {
+          value = JSON.stringify(value);
+          var date = new Date();
+          date.setTime(date.getTime() + 365*24*60*60*1000);
+          document.cookie = name + '=' + value + ';expires=' + date.toUTCString() + ';path=/';
+        };
+        var getCookie = function(name) {
+          var value = document.cookie.match('(^|;) ?' + name + '=([^;]*)(;|$)');
+          return value? JSON.parse(value[2]) : null;
+        };
+
+    </script>
+    <script>
+      // Initialize Firebase
+      // TODO: Replace with your project's customized code snippet
+      var config = {
+        apiKey: "AIzaSyDShLaKwHY1zwk8UfL-HGLIXsemRZSaB9M",
+        authDomain: "seren-ann.firebaseapp.com",
+        projectId: "seren-ann"
+      };
+
+      firebase.initializeApp(config);
+      var db = firebase.firestore();
+    </script>
+    <script type="text/javascript">
+    // cookie에라도 넣었다가 꺼내오도록 하자...
+    var anonymousUser = getCookie("user");
+      var uiConfig = {
+          autoUpgradeAnonymousUsers: true,
+        signInOptions: [
+            {
+              // Google provider must be enabled in Firebase Console to support one-tap
+              // sign-up.
+              provider: firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+              // Required to enable this provider in one-tap sign-up.
+              authMethod: 'https://accounts.google.com',
+              // Required to enable ID token credentials for this provider.
+              // This can be obtained from the Credentials page of the Google APIs
+              // console.
+              clientId: '667984957356-u9q4tnce61kb0k0hep9d8qph4a1kf309.apps.googleusercontent.com'
+            },
+          firebase.auth.FacebookAuthProvider.PROVIDER_ID
+        ],
+        // credentialHelper: firebaseui.auth.CredentialHelper.GOOGLE_YOLO,
+        tosUrl: 'http://localhost:5000',
+          callbacks: {
+              signInSuccessWithAuthResult: function(authResult, redirectUrl) {
+                var user = authResult.user;
+                var credential = authResult.credential;
+                var isNewUser = authResult.additionalUserInfo.isNewUser;
+                var providerId = authResult.additionalUserInfo.providerId;
+                var operationType = authResult.operationType;
+                // Do something with the returned AuthResult.
+                // Return type determines whether we continue the redirect automatically
+                // or whether we leave that to developer to handle.
+
+                // 마이그레이션
+                if(!isNewUser) {
+                    $.map( $("article"), function( val, i ) {
+                        return val.id
+                    }).forEach(function(articleId){
+                        articleRef = db.collection("article").doc(articleId).collection("comments")
+                                        .where("writer.uid", "==", user.uid);
+                        articleRef.get().then(function(querySnapshot) {
+                            querySnapshot.forEach(function(doc) {
+                                // doc.data() is never undefined for query doc snapshots
+                                db.collection("article").doc(articleId).collection("comments").doc(doc.id).set({
+                                    writer: {
+                                        isAnonymous: user.isAnonymous,
+                                        uid: user.uid,
+                                        displayName: user.isAnonymous?null:(user.displayName?user.displayName:user.email.split("@")[0])
+                                    }
+                                }, { merge: true })
+                                .then(function(){
+                                    reload();
+                                });
+                            });
+                        });
+                    });
+                }
+                return true;
+              },
+
+            // signInFailure callback must be provided to handle merge conflicts which
+            // occur when an existing credential is linked to an anonymous user.
+            signInFailure: function(error) {
+              // For merge conflicts, the error.code will be
+              // 'firebaseui/anonymous-upgrade-merge-conflict'.
+              if (error.code != 'firebaseui/anonymous-upgrade-merge-conflict') {
+                return Promise.resolve();
+              }
+              // The credential the user tried to sign in with.
+              var cred = error.credential;
+              firebase.auth().signInWithCredential(cred).then(function(user){
+                $.map( $("article"), function( val, i ) {
+                    return val.id
+                }).forEach(function(articleId){
+                    articleRef = db.collection("article").doc(articleId).collection("comments")
+                                    .where("writer.uid", "==", anonymousUser.uid);
+                    articleRef.get().then(function(querySnapshot) {
+                        querySnapshot.forEach(function(doc) {
+                            // doc.data() is never undefined for query doc snapshots
+                            db.collection("article").doc(articleId).collection("comments").doc(doc.id).set({
+                                writer: {
+                                    isAnonymous: user.isAnonymous,
+                                    uid: user.uid,
+                                    displayName: user.isAnonymous?null:(user.displayName?user.displayName:user.email.split("@")[0])
+                                }
+                            }, { merge: true })
+                            .then(function(){
+                                reload();
+                            });
+                        });
+                    });
+                });    
+                // anonymousUser.delete();
+              });
+            }
+          }
+      };
+
+      var ui = new firebaseui.auth.AuthUI(firebase.auth());
+      ui.start('#firebaseui-auth-container', uiConfig);
+    </script>
+
+
+    <link rel="icon" sizes="192x192" href="https://firebasestorage.googleapis.com/v0/b/seren-ann.appspot.com/o/68d99ba29cc8.png?alt=media&amp;token=dc188e9f-9f5e-4513-a08f-903b350567fb">
+    <link rel="shortcut icon" type="image/x-icon" href="https://firebasestorage.googleapis.com/v0/b/seren-ann.appspot.com/o/36b3ee2d91ed.ico?alt=media&amp;token=19dd9b03-e5e9-4d93-9e72-dc8fede40e7e">
+    <!-- <link rel="stylesheet" type="text/css" href="https://firebasestorage.googleapis.com/v0/b/seren-ann.appspot.com/o/index.css?alt=media&token=85ab2397-7940-4b32-b1b2-7f963c6d32c9"> -->
+    <link rel="stylesheet" type="text/css" href="./index.css">
+</head>
+<body class="">
+    <span id="react-root">
+        <form enctype="multipart/form-data"><input accept="image/jpeg" class="tb_sK" type="file"></form>
+        <section class="_9eogI E3X2T">
+            <main class="SCxLW GIqfH " role="main">
+                <section class="_1SP8R  ">
+                        <div class="">
+                        <div>
+                            <div style="flex-direction: column; padding-top: 0px;">
+                                <article class="_8Rm4L M9sTE  L_LMM SgTZ1  Tgarh" id="a001">
+                                    <header class="Ppjfr UE9AK ">
+                                        <div class="RR-M-  mrq0Z" role="button">
+                                            <canvas class="CfWVH" width="78" height="78" style="transform: translate(-4.5px, -4.5px); position: absolute; top: 0px; left: 0px; width: 39px; height: 39px;"></canvas>
+                                            <a class="_2dbep qNELH kIKUG" href="/" style="width: 30px; height: 30px;"><img class="_6q-tv" src="https://firebasestorage.googleapis.com/v0/b/seren-ann.appspot.com/o/serendip.png?alt=media&amp;token=de7d35ce-6d33-401f-8465-9af82bba6b6e"></a>
+                                        </div>
+                                        <div class="o-MQd ">
+                                            <div class="">
+                                                <div class="e1e1d"><a class="FPmhX notranslate nJAzx" title="김예준" href="/">김예준</a></div>
+                                            </div>
+                                            <div class="M30cS"></div>
+                                        </div>
+                                    </header>
+                                    <div class="_97aPb ">
+                                        <div role="button">
+                                            <div class="rQDP3">
+                                                <div role="button">
+                                                    <div class="eLAPa kPFhm" role="button">
+                                                        <div class="KL4Bh" style="padding-bottom: 100%;"><img class="FFVAD" decoding="auto" sizes="600px" src="https://firebasestorage.googleapis.com/v0/b/seren-ann.appspot.com/o/main.jpg?alt=media&amp;token=6ca19282-71cf-4f14-9aa6-8d83c212ff28" style=""></div>
+                                                        <div class="_9AhH0"></div>
+                                                    </div>
+                                                </div>
+                                                <div class=" ijCUd _3eoV-  IjCL9 _19dxx "></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="eo2As ">
+                                        <section class="ltpMr Slqrh"><a class="fr66n tiVCN" href="/" role="button"><span class="Szr5J plqBR ">좋아요</span></a><a class="_15y0l OV9Wd" href="/" role="button"><span class="Szr5J K_WbV">댓글 달기</span></a><a class="wmtNn fscHb " href="/" role="button" aria-disabled="false"><span class="Szr5J bMltT   ">저장</span></a>
+                                        </section>
+                                        <section class="EDfFK ygqzn">
+                                            <div class="HbPOm y9v3U"><a class="zV_Nj" href="/liked_by/">좋아요 <span>825</span>개</a></div>
+                                        </section>
+                                        <div class="JKY4Z EtaWk">
+                                            <ul class="Xl2Pu">
+                                                <li class="gElp9"><a class="FPmhX notranslate TlrDj" title="serendip" href="/">김예준</a><span>
+                                                                                <span>친구에서 부부로, 저희 결혼합니다. 여러분을 초대합니다. :) 오셔서 축하해주세요!</span>
+                                                    <br>
+                                                    <span><a class="" href="/">#김예준</a></span>
+                                                    <span><a class="" href="/">#박은주</a></span>
+                                                    <span><a class="" href="/">#결혼스타그램</a></span>
+                                                    <span><a class="" href="https://search.daum.net/search?w=tot&amp;DA=YZR&amp;t__nil_searchbox=btn&amp;sug=&amp;sugo=&amp;q=2018%EB%85%84+8%EC%9B%94+25%EC%9D%BC" target="_blank">#8월25일</a></span>
+                                                    <span><a class="" href="https://search.daum.net/search?w=tot&amp;DA=YZR&amp;t__nil_searchbox=btn&amp;sug=&amp;sugo=&amp;q=2018%EB%85%84+8%EC%9B%94+25%EC%9D%BC" target="_blank">#토요일</a></span>
+                                                    <span><a class="" href="/">#오후2시</a></span>
+                                                    <span><a class="" href="http://place.map.daum.net/11648382" target="_blank">#양재온누리교회</a></span>
+                                                    <span><a class="" href="/">#사랑홀</a></span>
+                                                    <span><a class="" href="/">#결혼예배</a></span>
+                                                    </span>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                        <div class="k_Q0X NnvRN">
+                                            <a class="c-Yi7" href="/">
+                                                <time class="_1o9PC Nzb55" datetime="2018-06-04T11:29:02.000Z" title="2018년 6월 4일">2018년 8월 25일</time>
+                                            </a>
+                                        </div>
+                                        <section class="sH9wk _JgwE ">
+                                            <form class="X7cDz">
+                                                <textarea aria-label="댓글 달기..." placeholder="댓글 달기..." class="Ypffh" autocomplete="off" autocorrect="off"></textarea>
+                                            </form>
+                                        </section>
+                                    </div>
+                                    <div class="uFJwf MEAGs">
+                                        <button class="-tiwM"><span class="Hg3oE Szr5J">옵션 더 보기</span></button>
+                                    </div>
+                                </article>
+                                <article class="_8Rm4L M9sTE  L_LMM SgTZ1  Tgarh" id="a002">
+                                    <header class="Ppjfr UE9AK ">
+                                        <div class="RR-M-  mrq0Z" role="button">
+                                            <canvas class="CfWVH" width="78" height="78" style="transform: translate(-4.5px, -4.5px); position: absolute; top: 0px; left: 0px; width: 39px; height: 39px;"></canvas>
+                                            <a class="_2dbep qNELH kIKUG" href="/" style="width: 30px; height: 30px;"><img class="_6q-tv" src="https://firebasestorage.googleapis.com/v0/b/seren-ann.appspot.com/o/serendip.png?alt=media&amp;token=de7d35ce-6d33-401f-8465-9af82bba6b6e"></a>
+                                        </div>
+                                        <div class="o-MQd ">
+                                            <div class="">
+                                                <div class="e1e1d"><a class="FPmhX notranslate nJAzx" title="김예준" href="/">김예준</a></div>
+                                            </div>
+                                            <div class="M30cS"></div>
+                                        </div>
+                                    </header>
+                                    <div class="_97aPb ">
+                                    <a href="/explore.html">
+                                        <div role="button">
+                                            <div class="rQDP3">
+                                                <div role="button">
+                                                    <div class="eLAPa kPFhm" role="button">
+                                                        
+                                                        <div class="KL4Bh" style="padding-bottom: 100%;"><img class="FFVAD" decoding="auto" sizes="600px" src="https://firebasestorage.googleapis.com/v0/b/seren-ann.appspot.com/o/nemo.jpg?alt=media&token=93d7c7b0-8f8c-4e70-949c-2f5b7ab4bebb" style=""></div>
+                                                        <div class="_9AhH0"></div>
+                                                    </div>
+                                                </div>
+                                                <div class=" ijCUd _3eoV-  IjCL9 _19dxx "></div>
+                                            </div>
+                                        </div>
+                                        </a>
+                                    </div>
+                                    <div class="eo2As ">
+                                        <section class="ltpMr Slqrh"><a class="fr66n tiVCN" href="/" role="button"><span class="Szr5J plqBR ">좋아요</span></a><a class="_15y0l OV9Wd" href="/" role="button"><span class="Szr5J K_WbV">댓글 달기</span></a><a class="wmtNn fscHb " href="/" role="button" aria-disabled="false"><span class="Szr5J bMltT   ">저장</span></a>
+                                        </section>
+                                        <section class="EDfFK ygqzn">
+                                            <div class="HbPOm y9v3U"><a class="zV_Nj" href="/liked_by/">좋아요 <span>825</span>개</a></div>
+                                        </section>
+                                        <div class="JKY4Z EtaWk">
+                                            <ul class="Xl2Pu">
+                                                <li class="gElp9"><a class="FPmhX notranslate TlrDj" title="serendip" href="/">김예준</a><span>
+                                                                                <span>신랑신부의 험난했던 웨딩촬영, 그 결과물입니다. 이쁘게 봐주세용 *^^*</span><br/>
+                                                                                <span><a class="" href="/">#더보기</a></span>
+                                                                                <span><a class="" href="/">#사진을클릭하면새로운페이지로연결됩니다.</a></span>
+                                                    <br>
+                                                    </span>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                        <div class="k_Q0X NnvRN">
+                                            <a class="c-Yi7" href="/">
+                                                <time class="_1o9PC Nzb55" datetime="2018-06-04T11:29:02.000Z" title="2018년 6월 4일">2018년 8월 25일</time>
+                                            </a>
+                                        </div>
+                                        <section class="sH9wk _JgwE ">
+                                            <form class="X7cDz">
+                                                <textarea aria-label="댓글 달기..." placeholder="댓글 달기..." class="Ypffh" autocomplete="off" autocorrect="off"></textarea>
+                                            </form>
+                                        </section>
+                                    </div>
+                                    <div class="uFJwf MEAGs">
+                                        <button class="-tiwM"><span class="Hg3oE Szr5J">옵션 더 보기</span></button>
+                                    </div>
+                                </article>
+                                <article class="_8Rm4L M9sTE  L_LMM SgTZ1  Tgarh" id="a003">
+                                    <header class="Ppjfr UE9AK ">
+                                        <div class="RR-M-  mrq0Z" role="button">
+                                            <canvas class="CfWVH" width="78" height="78" style="transform: translate(-4.5px, -4.5px); position: absolute; top: 0px; left: 0px; width: 39px; height: 39px;"></canvas>
+                                            <a class="_2dbep qNELH kIKUG" href="/" style="width: 30px; height: 30px;"><img class="_6q-tv" src="https://firebasestorage.googleapis.com/v0/b/seren-ann.appspot.com/o/serendip.png?alt=media&amp;token=de7d35ce-6d33-401f-8465-9af82bba6b6e"></a>
+                                        </div>
+                                        <div class="o-MQd ">
+                                            <div class="">
+                                                <div class="e1e1d"><a class="FPmhX notranslate nJAzx" title="김예준" href="/">김예준</a></div>
+                                            </div>
+                                            <div class="M30cS"></div>
+                                        </div>
+                                    </header>
+                                    <div class="_97aPb ">
+                                        <div role="button">
+                                            <div class="rQDP3">
+                                                <div role="button">
+                                                    <div class="kPFhm B1JlO" role="dialog">
+                                                      <div class="OAXCp" style="padding-bottom: 80%;">
+                                                        <div class="GRtmf wymO0 ">
+                                                          <div class="_5wCQW">
+                                                            <video id="video" class="tWeCl" playsinline="" poster="http://via.placeholder.com/600x450" preload="none" src="/seren.mp4" type="video/mp4"></video>
+                                                          </div>
+                                                        </div>
+                                                        <div class="oujXn">
+                                                          <div class="B2xwy P6lRB ">소리를 켜려면 동영상을 클릭하세요</div><div class="y4vpg VXgpI"><span class="xHqYT  Szr5J coreSpriteVideoIconLarge ">동영상</span></div><a class="B2xwy _3G0Ji PTIMp videoSpritePlayButton" href="javascript:video_toggle();" role="button"></a>
+                                                        </div>
+                                                        <a class="QvAa1" href="javascript:video_toggle();" role="button"></a>
+                                                      </div>
+                                                    </div>
+                                                </div>
+                                                <div class=" ijCUd _3eoV-  IjCL9 _19dxx "></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="eo2As ">
+                                        <section class="ltpMr Slqrh"><a class="fr66n tiVCN" href="/" role="button"><span class="Szr5J plqBR ">좋아요</span></a><a class="_15y0l OV9Wd" href="/" role="button"><span class="Szr5J K_WbV">댓글 달기</span></a><a class="wmtNn fscHb " href="/" role="button" aria-disabled="false"><span class="Szr5J bMltT   ">저장</span></a>
+                                        </section>
+                                        <section class="EDfFK ygqzn">
+                                            <div class="HbPOm y9v3U"><a class="zV_Nj" href="/liked_by/">좋아요 <span>37</span>개</a></div>
+                                        </section>
+                                        <div class="JKY4Z EtaWk">
+                                            <ul class="Xl2Pu">
+                                                <li class="gElp9"><a class="FPmhX notranslate TlrDj" title="serendip" href="/">김예준</a><span>
+                                                                                <span>만나서 결혼까지, <stroke>(험난했던)</stroke>지난 날의 기록</span>
+                                                    <br>
+                                                    <span><a class="" href="/">#수제영상</a></span>
+                                                    <span><a class="" href="/">#웨딩촬영</a></span>
+                                                    <span><a class="" href="/">#힘들었다</a></span>
+                                                    <span><a class="" href="/">#두번다시하지않으리</a></span>
+                                                    </span>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                        <div class="k_Q0X NnvRN">
+                                            <a class="c-Yi7" href="/">
+                                                <time class="_1o9PC Nzb55" datetime="2018-06-04T11:29:02.000Z" title="2018년 6월 4일">2018년 8월 25일</time>
+                                            </a>
+                                        </div>
+                                        <section class="sH9wk _JgwE ">
+                                            <form class="X7cDz">
+                                                <textarea aria-label="댓글 달기..." placeholder="댓글 달기..." class="Ypffh" autocomplete="off" autocorrect="off"></textarea>
+                                            </form>
+                                        </section>
+                                    </div>
+                                    <div class="uFJwf MEAGs">
+                                        <button class="-tiwM"><span class="Hg3oE Szr5J">옵션 더 보기</span></button>
+                                    </div>
+                                </article>
+                                <article class="_8Rm4L M9sTE  L_LMM SgTZ1  " id="a004">
+                                    <header class="Ppjfr UE9AK ">
+                                        <div class="RR-M- h5uC0 mrq0Z" role="button">
+                                            <canvas class="CfWVH" width="78" height="78" style="transform: translate(-4.5px, -4.5px); position: absolute; top: 0px; left: 0px; width: 39px; height: 39px;"></canvas>
+                                            <span class="_2dbep " role="link" style="width: 30px; height: 30px;"><img class="_6q-tv" src="https://firebasestorage.googleapis.com/v0/b/seren-ann.appspot.com/o/serendip.png?alt=media&amp;token=de7d35ce-6d33-401f-8465-9af82bba6b6e"></span>
+                                        </div>
+                                        <div class="o-MQd ">
+                                            <div class="">
+                                                <div class="e1e1d"><a class="FPmhX notranslate nJAzx" title="김예준" href="/">김예준</a></div>
+                                                <div class="M30cS"></div>
+                                            </div>
+                                        </div>
+                                    </header>
+                                    <div class="_97aPb ">
+                                        <div role="button">
+                                            <div class="eLAPa kPFhm" role="button">
+                                                <div class="KL4Bh" style="padding-bottom: 100%;"><img class="FFVAD" decoding="auto" sizes="600px" src="https://firebasestorage.googleapis.com/v0/b/seren-ann.appspot.com/o/map.png?alt=media&amp;token=b1409fd7-b4f5-40de-a933-181dbfb42193" style=""></div>
+                                                <div class="_9AhH0"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="eo2As ">
+                                        <section class="ltpMr Slqrh"><a class="fr66n tiVCN" href="/" role="button"><span class="Szr5J ptsdu ">좋아요</span></a><a class="_15y0l OV9Wd" href="/" role="button"><span class="Szr5J K_WbV">댓글 달기</span></a><a class="wmtNn fscHb " href="/" role="button" aria-disabled="false"><span class="Szr5J bMltT   ">저장</span></a></section>
+                                        <section class="EDfFK ygqzn">
+                                            <div class="HbPOm y9v3U"><a class="zV_Nj" href="/p/Bjmh3PXAkv_/liked_by/">좋아요 <span>29</span>개</a></div>
+                                        </section>
+                                        <div class="JKY4Z EtaWk">
+                                            <ul class="Xl2Pu">
+                                                <li class="gElp9"><a class="FPmhX notranslate TlrDj" title="serendip" href="/">김예준</a><span>
+                                                                <span>찾아오는 길입니다. 가급적 <a class="" href="/">#대중교통</a>을 이용해주세요.</span> <br/><span><a class="" href="http://map.daum.net/?urlX=507630&amp;urlY=1106748&amp;urlLevel=3&amp;itemId=17495499&amp;q=%EC%96%91%EC%9E%AC%EC%97%AD%20%EC%8B%A0%EB%B6%84%EB%8B%B9%EC%84%A0%2010%EB%B2%88%EC%B6%9C%EA%B5%AC&amp;srcid=17495499&amp;map_type=TYPE_MAP" target="_blank">#양재역10번출구</a>에서 교회 왕복 셔틀버스를 운행합니다.</span>
+                                                                <br/>
+                                                                <span><a class="" href="/">#한땀한땀직접그림</a></span>
+                                                                <span><a class="" href="/">#파워포인트만세</a></span>
+                                                    <br>
+                                                    </span>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                        <div class="k_Q0X NnvRN">
+                                            <a class="c-Yi7" href="/p/Bjmh3PXAkv_/">
+                                                <time class="_1o9PC Nzb55" datetime="2018-06-04T12:02:05.000Z" title="2018년 6월 4일">3시간 전</time>
+                                            </a>
+                                        </div>
+                                        <section class="sH9wk _JgwE ">
+                                            <form class="X7cDz">
+                                                <textarea aria-label="댓글 달기..." placeholder="댓글 달기..." class="Ypffh" autocomplete="off" autocorrect="off"></textarea>
+                                            </form>
+                                        </section>
+                                    </div>
+                                    <div class="uFJwf MEAGs">
+                                        <button class="-tiwM"><span class="Hg3oE Szr5J">옵션 더 보기</span></button>
+                                    </div>
+                                </article>
+                            
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <div>
+                    <form enctype="multipart/form-data">
+                        <input accept="image/jpeg" class="tb_sK" type="file">
+                    </form>
+                </div>
+            </main>
+            <nav class="NXc7H jLuN9  ">
+                <div class="XajnB"></div>
+                    <div class="_8MQSO  Cx7Bp">
+                        <div class="_lz6s ">
+                            <div class="MWDvN ">
+                                <div class="oJZym">
+                                    <div class="aU2HW"><a class="jWQqO Szr5J TAvXg _7mese" href="/">Instagram</a><a class="jWQqO Szr5J efNlB _72hVR" href="/">Instagram</a></div>
+                                </div>
+                                <div class="LWmhU _0aCwM search_btn toggle_on">
+                                    <form action="https://www.google.co.kr/search" target="_blank">
+                                        <input class="XTCLo zyHYP" placeholder="검색" type="text" value="" name="q">
+                                    </form>
+                                    <div class="pbgfb Di7vw " role="button">
+                                        <div class="eyXLr wUAXj ">
+                                            <span class="_6RZXI HQqj1"></span>
+                                            <span class="TqC_a">검색</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="LWmhU _0aCwM toggle_off">
+                                    <form action="https://www.google.co.kr/search" target="_blank">
+                                        <input class="XTCLo zyHYP" placeholder="검색" type="text" value="" name="q">
+                                    </form>
+                                    <span class="mlrQa HQqj1"></span>
+                                    <div class="jLwSh" role="dialog"></div>
+                                    <div class="aIYm8 sUzlC" role="button"></div>
+                                </div>
+                                <div class="ctQZg">
+                                    <div class="_47KiJ">
+                                        <div class="XrOey"><a class="Szr5J kIKUG cwB7a" href="./explore.html">사람 찾기</a></div>
+                                        <div class="XrOey"><a href="#" class="_0ZPOP kIKUG dFPOx  "><span class="Szr5J">활동 피드</span></a></div>
+                                        <div class="XrOey"><a class="Szr5J kIKUG kQqyt" href="#">프로필</a></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+            <footer class="_8Rna9 " role="contentinfo">
+                <div class="iseBh  VWk7Y " style="max-width: 570px;">
+                    <nav class="uxKLF"></nav>
+                    <span class="DINPA">© 2018 Serendip</span>
+                </div>
+            </footer>
+        </section>
+
+    <div class="overlay" style="display:none;"></div>
+    <div class="overlay-message" style="position: fixed; left: 50%;top:50%;display:none;">
+        <div style="position: relative; left: -50%; top:-50%; border: dotted red 1px;">
+            <div id="firebaseui-auth-container"></div>
+        </div>
+    </div>
+
+    </span>
+    <script type="text/javascript">
+        let showLogin = function(callback){
+            $("ul.firebaseui-idp-list .firebaseui-anonymous").remove();
+            $("ul.firebaseui-idp-list").append('<button class="firebaseui-anonymous firebaseui-idp-button mdl-button mdl-js-button mdl-button--raised firebaseui-idp-password firebaseui-id-idp-button" data-upgraded=",MaterialButton"><span class="firebaseui-idp-icon-wrapper"></span><span class="firebaseui-idp-text firebaseui-idp-text-long">익명으로 계속 이용하기</span><span class="firebaseui-idp-text firebaseui-idp-text-short">익명</span></button>');
+            $(".overlay, .overlay-message").show();
+
+            $(".overlay,.firebaseui-anonymous").click(function() {
+                $(".overlay, .overlay-message").hide();
+            });            
+        }
+
+        let reload = function(){
+            $(".Xl2Pu").each(function(){
+                let articleId = $(this).parents("article")[0].id;
+                let ul = $(this);
+
+                articleRef = db.collection("article").doc(articleId).collection("comments");
+                articleRef.orderBy("createdAt", "asc").get().then(function(querySnapshot) {
+                    ul.find(".comment").remove();
+                    querySnapshot.forEach(function(doc) {
+                        // doc.data() is never undefined for query doc snapshots
+                        data = doc.data();
+                        writer = data.writer.isAnonymous === true ? "익명" : data.writer.displayName;
+                        var li = '<li class="gElp9 comment"><a class="FPmhX notranslate TlrDj" title="psj4753" href="/">'+writer+'</a><span><span>'+data.comment+'</span></span></li>';
+                        ul.append(li);
+                    });
+                });
+            });
+        };
+        reload();
+
+        var write_trigger = function(that){
+            let articleId = $(that).parents("article")[0].id;
+            let text = $(that).val();
+            var user = firebase.auth().currentUser;
+            let textarea = $(that);
+            
+            var write = function(){
+                textarea.val('');
+                textarea.empty();
+                textarea.focusout();
+                textarea.blur();
+                let user = firebase.auth().currentUser
+                setCookie('user', user);
+                if(!user) return ;
+                articleRef = db.collection("article").doc(articleId).collection("comments");
+                articleRef.add({
+                    writer: {
+                        isAnonymous: user.isAnonymous,
+                        uid: user.uid,
+                        displayName: user.isAnonymous?null:(user.displayName?user.displayName:user.email.split("@")[0])
+                    },
+                    comment: text,
+                    createdAt: +new Date(),
+                })
+                .then(function(docRef) {
+                    reload();
+                })
+                .catch(function(error) {
+                    console.error("Error adding document: ", error);
+                });
+            }
+            // 로그인 되어 있다.
+            if (user) {
+                console.log("logged-in");
+                if(user.isAnonymous) {
+                    console.log("isAnonymous");
+                    // 일단 쓰고
+                    write();
+
+                    showLogin(function(){
+                        // TODO : 로그인 성공시 마이그레이션
+                    });
+                } else {
+                    console.log("good");
+                    // 끝
+                    write();
+                }
+            } else {
+                console.log("not logged-in");
+                // 로그인 되어 있지 않다.
+
+                // 일단 익명 로그인 수행
+                firebase.auth().signInAnonymously().catch(function(error) {
+                    // Handle Errors here.
+                    var errorCode = error.code;
+                    var errorMessage = error.message;
+                    console.error(errorCode, errorMessage);
+                });
+
+                firebase.auth().onAuthStateChanged(function(user) {
+                    console.log("good");
+                  // 완료시
+                  if (user) {
+                    // User is signed in.
+                    var isAnonymous = user.isAnonymous;
+                    var uid = user.uid;
+
+                    write();
+
+                    showLogin(function(){
+                        // TODO : 로그인 성공시 마이그레이션
+                    });
+                  }
+                });
+            }
+        }
+
+        $(".uFJwf").click(function(){
+            var that = $(this).parents("article").find("textarea")[0]
+            write_trigger(that);
+        });
+        $(".X7cDz textarea").keypress(function(e){
+            if(e.which == 13) {
+                write_trigger(this);
+            }
+        });
+        
+    </script>
+    <script type="text/javascript">
+        var toggle_event = function() {
+            let toggle_on = $(".toggle_on");
+            let toggle_off = $(".toggle_off");
+            toggle_on.removeClass("toggle_on")
+                .addClass("toggle_off");
+            toggle_off.removeClass("toggle_off")
+                .addClass("toggle_on");
+        };
+        $(".LWmhU.search_btn").click(function() {
+            toggle_event();
+            $(".XTCLo").focus();
+        });
+        $(".XTCLo").focusout(function() {
+            toggle_event();
+        });
+        var is_play = false;
+        var video_toggle = function(){
+            if(is_play) {
+                var video = document.getElementById("video").pause();
+                $(".videoSpritePlayButton").show();
+                is_play = false;
+            } else {
+                var video = document.getElementById("video").play();
+                $(".videoSpritePlayButton").hide();
+                is_play = true;
+            }
+        }
+    </script>
+</body>
+</html>
