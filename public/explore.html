@@ -312,7 +312,11 @@ a):g(c,a)}}var e={passive:!0,capture:!0},h=["click","mousedown","keydown","touch
         }
         $("body").on("click", "a.ga", function(){
             var id = $(this).data("ga-id");
-            gtag("event", "explore", {'id': id});
+            gtag('event', "click", {
+              'event_category': "explore",
+              'event_label': id,
+              'value': id
+            });
         })
     </script>        
 </body>

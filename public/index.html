@@ -641,7 +641,12 @@
         }
         $("body").on("click", "a.ga", function(){
             var id = $(this).data("ga-id");
-            gtag("event", "home", {'id': id});
+            gtag('event', "click", {
+              'event_category': "home",
+              'event_label': id,
+              'value': id
+            });
+
         })
     </script>
 </body>
